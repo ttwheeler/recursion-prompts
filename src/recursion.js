@@ -143,16 +143,61 @@ var palindrome = function(string) {
 // modulo(17,5) // 2
 // modulo(22,6) // 4
 var modulo = function(x, y) {
+  if (x === 0){
+    if (y === 0) {
+      return NaN;
+    } else {
+      return 0;
+    }
+  } else if (x > 0 && y > 0) {
+    if (x < y) {
+      return x;
+    } else {
+      return modulo (x - y, y);
+    }
+  } else if (x > 0 && y < 0) {
+    return modulo(x, -y);
+  } else if (x < 0 && y > 0) {
+    return -modulo(-x , y);
+  } else if (x < 0 && y < 0) {
+    return -modulo(-x, -y);
+  }
 };
 
 // 12. Write a function that multiplies two numbers without using the * operator or
 // Math methods.
 var multiply = function(x, y) {
+  if (y === 0 || x === 0){
+    return 0;
+  } else if (x > 0 && y > 0) {
+    return x + multiply(x, y-1);
+  } else if (x < 0 && y < 0) {
+    return multiply (-x, -y);
+  } else if (x < 0 && y > 0) {
+    return -multiply(-x, y);
+  } else {
+    return -multiply(x, -y);
+  }
 };
 
 // 13. Write a function that divides two numbers without using the / operator or
 // Math methods to arrive at an approximate quotient (ignore decimal endings).
 var divide = function(x, y) {
+  if (y === 0 ) {
+    return NaN;
+  }
+  if (x < 0 && y < 0) {
+    return divide(-x,-y);
+  } else if (x < 0 && y > 0) {
+    return -divide(-x, y)
+  } else if (x > 0 && y < 0) {
+    return -divide(x, -y)
+  }
+  if (x < y) {
+    return 0;
+  } else {
+    return 1 + divide (x-y, y);
+  }
 };
 
 // 14. Find the greatest common divisor (gcd) of two positive numbers. The GCD of two
@@ -161,6 +206,15 @@ var divide = function(x, y) {
 // http://www.cse.wustl.edu/~kjg/cse131/Notes/Recursion/recursion.html
 // https://www.khanacademy.org/computing/computer-science/cryptography/modarithmetic/a/the-euclidean-algorithm
 var gcd = function(x, y) {
+  if (x < 0 || y < 0) {
+    return null;
+  } else if (x === 0) {
+    return y;
+  } else if (y === 0) {
+    return x;
+  } else {
+    return gcd(y, modulo(x,y));
+  }
 };
 
 // 15. Write a function that compares each character of two strings and returns true if
@@ -168,21 +222,46 @@ var gcd = function(x, y) {
 // compareStr('house', 'houses') // false
 // compareStr('tomato', 'tomato') // true
 var compareStr = function(str1, str2) {
+  var oneLen = str1.length;
+  var twoLen = str2.length;
+
+  if (oneLen === 0 && twoLen === 0) {
+    return true
+  } else if (oneLen === 0 || twoLen === 0) {
+    return false;
+  } else {
+    return ((str1[0] === str2[0]) && compareStr(str1.slice(1),str2.slice(1)));
+  }
 };
 
 // 16. Write a function that accepts a string and creates an array where each letter
 // occupies an index of the array.
 var createArray = function(str) {
+  if (str.length === 0) {
+    return [];
+  } else {
+    return [str[0]].concat(createArray(str.slice(1)));
+  }
 };
 
 // 17. Reverse the order of an array
 var reverseArr = function(array) {
+  if (array.length === 0) {
+    return [];
+  } else {
+    return reverseArr(array.slice(1)).concat(array[0]);
+  }
 };
 
 // 18. Create a new array with a given value and length.
 // buildList(0,5) // [0,0,0,0,0]
 // buildList(7,3) // [7,7,7]
 var buildList = function(value, length) {
+  if (length === 0) {
+    return [];
+  } else {
+    return [value].concat(buildList(value,length-1));
+  }
 };
 
 // 19. Implement FizzBuzz. Given integer n, return an array of the string representations of 1 to n.
@@ -191,17 +270,39 @@ var buildList = function(value, length) {
 // For numbers which are multiples of both three and five, output “FizzBuzz” instead of the number.
 // fizzBuzz(5) // ['1','2','Fizz','4','Buzz']
 var fizzBuzz = function(n) {
+  if (n === 0) {
+    return [];
+  } else if (n % 3 === 0 && n % 5 === 0) {
+    return fizzBuzz(n-1).concat(['FizzBuzz']);
+  } else if (n % 3 === 0) {
+    return fizzBuzz(n-1).concat(['Fizz']);
+  } else if (n % 5 === 0) {
+    return fizzBuzz(n-1).concat(['Buzz']);
+  } else {
+    return fizzBuzz(n-1).concat([n+'']);
+  }
 };
 
 // 20. Count the occurrence of a value in a list.
 // countOccurrence([2,7,4,4,1,4], 4) // 3
 // countOccurrence([2,'banana',4,4,1,'banana'], 'banana') // 2
 var countOccurrence = function(array, value) {
+  if(array.length === 0) {
+    return 0;
+  } else if (array[0] === value) {
+    return 1+countOccurrence(array.slice(1), value);
+  } else {
+    return countOccurrence(array.slice(1), value);
+  }
 };
 
 // 21. Write a recursive version of map.
 // rMap([1,2,3], timesTwo); // [2,4,6]
 var rMap = function(array, callback) {
+  if(array.length === 0) {
+    return [];
+  }
+  return [callback(array[0])].concat(rMap(array.slice(1),callback));
 };
 
 // 22. Write a function that counts the number of times a key occurs in an object.
@@ -209,6 +310,17 @@ var rMap = function(array, callback) {
 // countKeysInObj(obj, 'r') // 1
 // countKeysInObj(obj, 'e') // 2
 var countKeysInObj = function(obj, key) {
+  if (typeof obj !== 'object' || obj === null) {
+    return 0;
+  }
+  var count = 0;
+  for (var pos in obj) {
+    if (pos === key) {
+      count ++;
+    }
+    count += countKeysInObj(obj[pos], key);
+  }
+  return count;
 };
 
 // 23. Write a function that counts the number of times a value occurs in an object.
@@ -216,11 +328,35 @@ var countKeysInObj = function(obj, key) {
 // countValuesInObj(obj, 'r') // 2
 // countValuesInObj(obj, 'e') // 1
 var countValuesInObj = function(obj, value) {
+  if (typeof obj !== 'object') {
+    if(obj === value) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+  var count = 0;
+  for (var pos in obj) {
+    count += countValuesInObj(obj[pos], value);
+  }
+  return count;
 };
 
 // 24. Find all keys in an object (and nested objects) by a provided name and rename
 // them to a provided new name while preserving the value stored at that key.
 var replaceKeysInObj = function(obj, oldKey, newKey) {
+  if (typeof obj !== 'object') {
+    return;
+  }
+
+  for (var key in obj) {
+    replaceKeysInObj(obj[key], oldKey, newKey);
+  }
+  if(obj.hasOwnProperty(oldKey)) {
+    obj[newKey] = obj[oldKey];
+    delete obj[oldKey];
+  }
+  return obj;
 };
 
 // 25. Get the first n Fibonacci numbers. In the Fibonacci sequence, each subsequent
